@@ -1,0 +1,22 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+ 
+  name: azure-build-scaler
+spec:
+  maxReplicaCount: 5
+  minReplicaCount: 1
+  scaleTargetRef:
+    name: azure-build-agent
+  triggers:
+    - authenticationRef:
+        name: azure-build-agent-auth
+      metadata:
+        activationTargetPipelinesQueueLength: '5'
+        organizationURLFromEnv: AZP_URL
+        personalAccessTokenFromEnv: AZP_TOKEN
+        poolID: mgb
+        poolName: mgb
+        targetPipelinesQueueLength: '1'
+      type: azure-pipelines
+

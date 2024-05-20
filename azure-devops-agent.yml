@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-devops-agent
+  namespace: azure-devops
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: azure-devops-agent
+  template:
+    metadata:
+      labels:
+        app: azure-devops-agent
+    spec:
+      containers:
+      - name: azure-devops-agent
+        image: mcr.microsoft.com/azure-pipelines/vsts-agent:latest
+        env:
+        - name: VSTS_AGENT_INPUT_URL
+          value: https://dev.azure.com/sansow
+        - name: VSTS_AGENT_INPUT_POOL
+          value: mgb
+        - name: VSTS_ACCOUNT
+          value: sansow
+        - name: VSTS_AGENT_INPUT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: azure-devops-agent-secret
+              key: token
+        volumeMounts:
+        - name: agent-data
+          mountPath: /agent
+      volumes:
+      - name: agent-data
+        emptyDir: {}
+

@@ -1,0 +1,19 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: azure-build-agent-auth
+  namespace: azure-build
+  resourceVersion: '5144384'
+  uid: b9c2f107-3f3d-4854-8229-d171a3e31800
+spec:
+  env:
+    - name: AZP_POOL
+      parameter: mgb
+    - name: AZP_URL
+      parameter: '<azpurl>'
+    - name: AZP_TOKEN
+      parameter: <api token>
+    - name: poolID
+      parameter: mgb
+status:
+  scaledobjects: azure-build-scaler
