@@ -10,6 +10,6 @@ git push -u origin main
 
 Referecen code to build https://github.com/kevchu3/azure-buildagent-container.git
 
-oc new-project azure-build
+oc new-project azure-build \n
 oc new-project ado-openshift
 create a secret called azuredevops for Scaled Joba nd Trigger Aith with AZP_URL, AZP_TOKEN and AZP_POOL
