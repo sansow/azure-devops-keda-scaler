@@ -1,0 +1,52 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: azuredevops-build-agent-scaledjob
+  namespace: azure-build
+  creationTimestamp: '2025-02-18T18:54:52Z'
+  finalizers:
+    - finalizer.keda.sh
+  generation: 10
+spec:
+  failedJobsHistoryLimit: 5
+  jobTargetRef:
+    parallelism: 3
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: azuredevops-build-agent
+      spec:
+        containers:
+          - env:
+              - name: AZP_URL
+                value: 'https://dev.azure.com/sabhaska0577'
+              - name: AZP_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    key: AZP_TOKEN
+                    name: azdevops
+              - name: AZURE_DEVOPS_ORG
+                value: sabhaska0577
+              - name: AZURE_DEVOPS_PROJECT
+                value: ocp
+              - name: AZURE_DEVOPS_PIPELINE
+                value: sansow.azure-pipelines-openshift
+            image: 'default-route-openshift-image-registry.apps.mgb.eastus.aroapp.io/azure-build/azure-build-agent:latest'
+            name: azuredevops-build-agent
+            resources: {}
+        restartPolicy: OnFailure
+        serviceAccountName: azure-build-sa
+  pollingInterval: 30
+  rollout: {}
+  scalingStrategy: {}
+  successfulJobsHistoryLimit: 5
+  triggers:
+    - authenticationRef:
+        name: azure-devops-pat-auth
+      metadata:
+        organizationURLFromEnv: AZP_URL
+        personalAccessTokenFromEnv: AZP_TOKEN
+        poolID: '1'
+        poolName: Default
+      type: azure-pipelines
