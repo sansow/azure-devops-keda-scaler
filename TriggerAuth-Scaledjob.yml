@@ -1,0 +1,21 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+ 
+  finalizers:
+    - finalizer.keda.sh
+  generation: 3
+  name: azure-devops-pat-auth
+  namespace: azure-build
+  resourceVersion: '4848657'
+spec:
+  secretTargetRef:
+    - key: AZP_POOL
+      name: azdevops
+      parameter: AZP_POOL
+    - key: AZP_URL
+      name: azdevops
+      parameter: AZP_URL
+    - key: AZP_TOKEN
+      name: azdevops
+      parameter: AZP_TOKEN
