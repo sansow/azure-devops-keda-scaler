@@ -1,10 +1,12 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: azure-cli-cronjob
-  namespace: <your-namespace>
+  namespace: azure-build
 spec:
-  schedule: "*/30 * * * *"  # Every 30 minutes
+  schedule: '*/30 * * * *'  # Every 30 minutes
+  concurrencyPolicy: Allow
+  suspend: false
   jobTemplate:
     spec:
       template:
@@ -14,9 +16,19 @@ spec:
               image: mcr.microsoft.com/azure-cli
               command:
                 - /bin/sh
-                - -c
-                - >
+                - '-c'
+                - |
                   az login --service-principal -u <client-id> -p <client-secret> --tenant <tenant-id> && 
                   az account get-access-token --resource=https://dev.azure.com --query accessToken -o tsv |
-                  oc patch secret azuredevops-token -n <your-namespace> --type=json -p='[{"op": "replace", "path": "/data/access-token", "value":"'"$(echo -n $(cat -) | base64)"'"}]'
+                  kubectl patch secret azuredevops-token -n azure-build --type=json -p='[{"op": "replace", "path": "/data/access-token", "value":"'"$(echo -n $(cat -) | base64)"'"}]'
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: Always
           restartPolicy: OnFailure
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+          schedulerName: default-scheduler
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
