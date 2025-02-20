@@ -16,6 +16,7 @@ spec:
                 - /bin/sh
                 - -c
                 - >
-                  # Add your commands to run inside the container here
-                  echo "Running Azure CLI tasks"
+                  az login --service-principal -u <client-id> -p <client-secret> --tenant <tenant-id> && 
+                  az account get-access-token --resource=https://dev.azure.com --query accessToken -o tsv |
+                  oc patch secret azuredevops-token -n <your-namespace> --type=json -p='[{"op": "replace", "path": "/data/access-token", "value":"'"$(echo -n $(cat -) | base64)"'"}]'
           restartPolicy: OnFailure
