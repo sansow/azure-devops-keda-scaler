@@ -1,0 +1,10 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: azuredevops-token
+  namespace: <replace me>
+  uid: b820bc8c-8cd3-4c2b-8c3f-345d1a994dd4
+
+data:
+  access-token: ''
+type: Opaque
